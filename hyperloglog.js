@@ -10,8 +10,7 @@ function compute_alpha_times_bucket_count_squared(bucket_count) {
 function HyperLogLog(n) {
     var bucket_count = Math.pow(2, n);
     var alpha_times_bucket_count_squared = compute_alpha_times_bucket_count_squared(bucket_count);
-    var buckets = new Buffer(bucket_count);
-    buckets.fill(0);
+    var buckets = new Buffer.allocUnsafe(bucket_count).fill(0);
 
     // Maintain some running counts so that returning cardinality is cheap.
 
@@ -54,16 +53,6 @@ function HyperLogLog(n) {
         },
 
         count: function count() {
-            /*var sum_of_inverses = 0;
-            var count_zero_buckets = 0;
-
-            for (var i = 0; i < bucket_count; ++i) {
-                var bucket = buckets[i];
-                if (bucket === 0) ++count_zero_buckets;
-                sum_of_inverses += 1 / Math.pow(2, bucket);
-            }*/
-            // No longer need to compute this all every time, since we keep running counts to keep this cheap.
-
             var estimate = alpha_times_bucket_count_squared / sum_of_inverses;
 
             // Apply small cardinality correction
