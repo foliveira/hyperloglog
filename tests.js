@@ -1,11 +1,11 @@
-var HyperLogLog = require('./hyperloglog');
+var HyperLogLog = require('./hll');
 var hash = HyperLogLog.hash;
 var vows = require('vows');
 var assert = require('assert');
 
 vows.describe('HyperLogLog').addBatch({
     'empty hll has cardinality of zero': function () {
-        assert.equal(HyperLogLog(8).count(), 0);
+        assert.equal(new HyperLogLog(8).count(), 0);
     },
 
     'counts unique things': function () {
@@ -13,7 +13,7 @@ vows.describe('HyperLogLog').addBatch({
         var thing2 = hash('thing2');
         var thing3 = hash('thing3');
 
-        var hll = HyperLogLog(8);
+        var hll = new HyperLogLog(8);
 
         hll.add(thing1);
 
@@ -29,8 +29,8 @@ vows.describe('HyperLogLog').addBatch({
     },
 
     'merges overlapping counts': function () {
-        var hll = HyperLogLog(15);
-        var hll2 = HyperLogLog(15);
+        var hll = new HyperLogLog(15);
+        var hll2 = new HyperLogLog(15);
 
         for (var i = 0; i < 100; ++i) {
             hll.add(hash('Just hll ' + i));
@@ -43,16 +43,16 @@ vows.describe('HyperLogLog').addBatch({
         assert(Math.abs(hll.count() - 200) <= 2);
         assert(Math.abs(hll2.count() - 200) <= 2);
 
-        hll.merge(hll2.output());
+        hll.merge(hll2);
 
         assert(Math.abs(hll.count() - 300) <= 3);
     },
 
     'merges bigger HLL into a smaller one': function () {
-        var hll = HyperLogLog(8);
-        var hll2 = HyperLogLog(14);
+        var hll = new HyperLogLog(8);
+        var hll2 = new HyperLogLog(14);
 
-        var original_relative_error = hll.relative_error();
+        var original_relative_error = hll.relativeError();
 
         hll.add(hash('Just hll'));
         hll2.add(hash('Just hll2'));
@@ -60,18 +60,18 @@ vows.describe('HyperLogLog').addBatch({
         hll.add(both);
         hll2.add(both);
 
-        hll.merge(hll2.output());
+        hll.merge(hll2);
 
         assert.equal(hll.count(), 3);
-        assert(hll.relative_error() == original_relative_error);
+        assert(hll.relativeError() == original_relative_error);
     },
 
     'merges a smaller HLL into a bigger one': function () {
         // The result is the same size as the smaller one.
-        var hll = HyperLogLog(14);
-        var hll2 = HyperLogLog(8);
+        var hll = new HyperLogLog(14);
+        var hll2 = new HyperLogLog(8);
 
-        var original_relative_error = hll.relative_error();
+        var original_relative_error = hll.relativeError();
 
         hll.add(hash('Just hll'));
         hll2.add(hash('Just hll2'));
@@ -79,10 +79,9 @@ vows.describe('HyperLogLog').addBatch({
         hll.add(both);
         hll2.add(both);
 
-        hll.merge(hll2.output());
+        hll.merge(hll2);
 
         assert.equal(hll.count(), 3);
-        assert(hll.relative_error() > original_relative_error);
+        assert(hll.relativeError() > original_relative_error);
     }
 }).export(module);
-
