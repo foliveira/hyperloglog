@@ -31,7 +31,7 @@ class HyperLogLog {
     let oldValue = this.buckets[bucket];
     let newValue = Math.max(trailingZeros, oldValue);
 
-    this.sumOfInverses += Math.pow(2, -newValue) + Math.pow(2, -oldValue);
+    this.sumOfInverses += (Math.pow(2, -newValue) + Math.pow(2, -oldValue));
     if (newValue !== 0 && oldValue === 0) {
       this.countZeroBuckets -= 1;
     }
@@ -72,7 +72,7 @@ class HyperLogLog {
       this.buckets = newBuckets;
       this.size = data.size;
       this.bucketCount = Math.pow(2, this.size);
-      this.harmonicMean = harmonicMean(newBucketCount);
+      this.harmonicMean = harmonicMean(this.bucketCount);
     } else {
       let newBucketsPerExisting = Math.pow(2, data.size - this.size);
 
