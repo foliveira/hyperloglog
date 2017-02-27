@@ -25,7 +25,7 @@
   ],
   "main": "hyperloglog.js",
   "scripts": {
-    "test": "vows tests.js"
+    "test": "vows tests/hyperloglog.tests.js"
   },
   "repository": {
     "type": "git",
