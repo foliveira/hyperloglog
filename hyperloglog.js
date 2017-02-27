@@ -3,7 +3,7 @@ class HyperLogLog {
     this.size = size;
     this.bucketCount = 2 ** size;
     this.buckets = new Buffer.allocUnsafe(this.bucketCount).fill(0);
-    this.harmonicMean = harmonicMean(this.bucketCount);
+    this.alpha = calculateAlpha(this.bucketCount);
     this.sumOfInverses = this.bucketCount;
     this.countZeroBuckets = this.bucketCount;
   }
@@ -42,7 +42,7 @@ class HyperLogLog {
   }
 
   count() {
-    let estimate = this.harmonicMean / this.sumOfInverses;
+    let estimate = this.alpha / this.sumOfInverses;
 
     if (this.countZeroBuckets > 0 && estimate < 5/2 * this.bucketCount) {
       estimate = this.bucketCount * Math.log(this.bucketCount / this.countZeroBuckets);
@@ -72,7 +72,7 @@ class HyperLogLog {
       this.buckets = newBuckets;
       this.size = data.size;
       this.bucketCount = 2 ** this.size;
-      this.harmonicMean = harmonicMean(this.bucketCount);
+      this.alpha = calculateAlpha(this.bucketCount);
     } else {
       let newBucketsPerExisting = 2 ** (data.size - this.size);
 
@@ -97,7 +97,7 @@ class HyperLogLog {
   }
 }
 
-function harmonicMean(bucketCount) {
+function calculateAlpha(bucketCount) {
   return 0.7213 / (1 + 1.079 / bucketCount) * bucketCount * bucketCount;
 }
 

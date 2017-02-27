@@ -1,4 +1,4 @@
-var HyperLogLog = require('./hll');
+var HyperLogLog = require('../hyperloglog');
 var hash = HyperLogLog.hash;
 var vows = require('vows');
 var assert = require('assert');
