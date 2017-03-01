@@ -16,7 +16,7 @@ class HyperLogLog {
     let bucket = hash[0] >>> (32 - this.size);
     let trailingZeros = 1;
   countZeros:
-    for (let i = 3; i >= 2; --i) {
+    for (let i = 3; i >= 1; --i) {
       let data = hash[i];
       for (let j = 32; j; --j) {
         if (data & 0x1) {
